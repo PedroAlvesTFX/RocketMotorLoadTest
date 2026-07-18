@@ -1,0 +1,230 @@
+/******************************************************************************
+ *
+ * Rocket Test Stand
+ *
+ * storage.h
+ *
+ * Gerenciamento das campanhas gravadas na Flash (LittleFS)
+ *
+ ******************************************************************************/
+
+#ifndef RTS_STORAGE_H
+#define RTS_STORAGE_H
+
+#include <Arduino.h>
+#include <LittleFS.h>
+
+#include "campaign.h"
+#include "config.h"
+
+/******************************************************************************
+ * Constantes
+ ******************************************************************************/
+
+#define STORAGE_HEADER_VERSION   3
+#define STORAGE_INDEX_VERSION    3
+
+#define STORAGE_INDEX_FILE       "/index.dat"
+
+#define STORAGE_FILE_EXTENSION   ".rts"
+
+/******************************************************************************
+ * Cabeçalho gravado no início de cada arquivo de campanha
+ ******************************************************************************/
+
+struct StorageHeader
+{
+    uint32_t version;
+    uint32_t campaignId;
+
+    char dateTime[32];
+    char description[51];
+
+    uint32_t sampleCount;
+    float peakForce;
+    float minimumForce;
+    float averageForce;
+    float impulseGramSeconds;
+    float durationSeconds;
+    float ignitionTimeSeconds;
+    float peakTimeSeconds;
+    float timeToPeakSeconds;
+    float burnTimeSeconds;
+    float burnAverageForce;
+    float sampleRateSps;
+    float maxRiseRateGps;
+
+    uint32_t ignitionIndex;
+    uint32_t peakIndex;
+    uint32_t burnEndIndex;
+};
+
+struct CampaignInfo
+{
+    uint32_t campaignId;
+    char dateTime[32];
+    char description[51];
+    uint32_t sampleCount;
+    float peakForce;
+};
+
+struct CampaignStatistics
+{
+    uint32_t campaignId;
+    char dateTime[32];
+    char description[51];
+    uint32_t sampleCount;
+    float peakForce;
+    float minimumForce;
+    float averageForce;
+    float impulseGramSeconds;
+    float durationSeconds;
+    float ignitionTimeSeconds;
+    float peakTimeSeconds;
+    float timeToPeakSeconds;
+    float burnTimeSeconds;
+    float burnAverageForce;
+    float sampleRateSps;
+    float maxRiseRateGps;
+    uint32_t ignitionIndex;
+    uint32_t peakIndex;
+    uint32_t burnEndIndex;
+};
+
+/******************************************************************************
+ * Classe Storage
+ ******************************************************************************/
+
+class Storage
+{
+public:
+
+    Storage();
+
+    //----------------------------------------------------------------------
+    // Inicialização
+    //----------------------------------------------------------------------
+
+    bool begin();
+    
+    bool getCSVSize(uint32_t campaignId, size_t &csvSize) const;
+
+    bool getCampaignInfo(uint32_t campaignId, CampaignInfo &info) const;
+
+    bool getCampaignStatistics(uint32_t campaignId, CampaignStatistics &statistics) const;
+
+    bool getCampaignJSONSize(uint32_t campaignId, size_t &jsonSize) const;
+
+    bool streamCampaignJSON(uint32_t campaignId, Stream &stream) const;
+
+    uint32_t getLastCampaignId() const;
+
+    uint32_t getOldestCampaignId() const;
+
+    bool deleteCampaign(uint32_t campaignId);
+
+    bool updateCampaignDescription(uint32_t campaignId, const char *description);
+
+    size_t getTotalBytes() const;
+
+    size_t getUsedBytes() const;
+
+    size_t getFreeBytes() const;
+
+    bool exportCSV(uint32_t campaignId, Stream &stream);
+
+    bool getRTSSize(uint32_t campaignId, size_t &rtsSize) const;
+
+    bool exportRTS(uint32_t campaignId, Stream &stream) const;
+
+    bool importCSV(const String &csvText, uint32_t &newCampaignId);
+
+    bool beginRTSImport(size_t expectedBytes);
+
+    bool writeRTSImport(const uint8_t *data, size_t length);
+
+    bool finishRTSImport(uint32_t &newCampaignId);
+
+    void cancelRTSImport();
+    //----------------------------------------------------------------------
+    // Obtém o próximo ID disponível
+    //----------------------------------------------------------------------
+
+    uint32_t nextCampaignId();
+
+    //----------------------------------------------------------------------
+    // Salva uma campanha completa
+    //----------------------------------------------------------------------
+
+    bool saveCampaign(
+        uint32_t campaignId,
+        const char *dateTime,
+        const char *description,
+        const Campaign &campaign);
+
+    //----------------------------------------------------------------------
+    // Carrega uma campanha da Flash
+    //----------------------------------------------------------------------
+
+    bool loadCampaign(
+        uint32_t campaignId,
+        Campaign &campaign);
+
+    //----------------------------------------------------------------------
+    // Verifica se uma campanha existe
+    //----------------------------------------------------------------------
+
+    bool exists(uint32_t campaignId) const;
+
+    //----------------------------------------------------------------------
+    // Quantidade de campanhas gravadas
+    //----------------------------------------------------------------------
+
+    uint32_t getCampaignCount() const;
+
+    //----------------------------------------------------------------------
+    // Lista todas as campanhas
+    //----------------------------------------------------------------------
+
+    void listCampaigns(Stream &out) const;
+
+private:
+
+    //----------------------------------------------------------------------
+    // Cria index.dat
+    //----------------------------------------------------------------------
+
+    bool createIndexFile();
+
+    //----------------------------------------------------------------------
+    // Lê o ID atual
+    //----------------------------------------------------------------------
+
+    uint32_t readCurrentId() const;
+
+    //----------------------------------------------------------------------
+    // Atualiza index.dat
+    //----------------------------------------------------------------------
+
+    bool writeCurrentId(uint32_t id);
+
+    bool ensureSpace(size_t requiredBytes);
+
+    bool initializeStorageFormat();
+
+    bool eraseCampaignFiles();
+
+    bool analyzeSamples(const Sample *samples, uint32_t sampleCount, StorageHeader &header) const;
+
+    File importFile;
+    size_t importExpectedBytes;
+    size_t importReceivedBytes;
+};
+
+/******************************************************************************
+ * Instância global
+ ******************************************************************************/
+
+extern Storage storage;
+
+#endif
