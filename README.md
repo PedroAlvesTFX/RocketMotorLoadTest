@@ -1,11 +1,14 @@
 Rocket Motor Load Test
 -------------
 É um sistema para testar motores de foguete de baixa potência.
-Composto de:
+O ESP32S3 super mini fica ligado a uma celula de carga pelo módulo HX711. Ele gera uma rede de WiFi que pode ser acessada por um celular.
+A rede WiFi gerada é RocketTestStand e a senha de acesso é rocket123.
 
-- ESP32S3
-- HX711
-- célula de carga
+Hardware:
+
+- ESP32S3 (https://pt.aliexpress.com/item/1005012143614522.html)
+- HX711 (https://pt.aliexpress.com/item/1005011857624473.html)
+- célula de carga (https://pt.aliexpress.com/item/1005011857624473.html)
 
 <img width="596" height="593" alt="TestStand" src="https://github.com/user-attachments/assets/8154f017-83eb-47ac-8dba-381938420270" />
 
