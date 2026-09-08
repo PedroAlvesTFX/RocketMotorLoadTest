@@ -16,7 +16,10 @@ Hardware:
 
 <img width="1200" height="675" alt="hx711-detail-80SPS" src="https://github.com/user-attachments/assets/2811c00e-7a3e-4860-a3eb-1380497ad78d" />
 
-<img width="434" height="502" alt="Ignition" src="https://github.com/user-attachments/assets/a6d3b3ac-c89a-4298-bb5b-5f184aa2c089" />
+<img width="434"   height="502" alt="Ignition" src="https://github.com/user-attachments/assets/a6d3b3ac-c89a-4298-bb5b-5f184aa2c089" />
+
+<a href="https://youtube.com/shorts/UDzfwct8FlM">   <img width="397" height="727" alt="image" src="https://github.com/user-attachments/assets/7f475033-e90c-4935-8d35-cdb33de9f6ef" /> </a>
+
 
 **Configuração:**
 <sub>
